@@ -5,6 +5,9 @@ import android.os.Bundle;
 
 public class Repo_owner extends AppCompatActivity {
 
+
+    String nm = "Name : ";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
