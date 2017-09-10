@@ -22,6 +22,9 @@ public class loginActivity extends AppCompatActivity {
         btn_search = (Button) findViewById(R.id.sch_btn);
 
 
+
+
+
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

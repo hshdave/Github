@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,15 +62,51 @@ public class Repo_details extends AppCompatActivity {
             {
                 try
                 {
-                    JSONObject jsonObject = new JSONObject(s);
+                    final JSONObject jsonObject = new JSONObject(s);
                     txtname.setText(jsonObject.getString("name"));
                     txtfname.setText(jsonObject.getString("full_name"));
                     txtdesc.setText(jsonObject.getString("description"));
                     txtlang.setText(jsonObject.getString("language"));
 
-                    JSONObject ownerobj = jsonObject.getJSONObject("owner");
+                    final JSONObject ownerobj = jsonObject.getJSONObject("owner");
 
                     txtowner.setText(ownerobj.getString("login"));
+
+                    String ow = txtowner.getText().toString();
+
+                    if(!ow.isEmpty() && ow != "" && ow != null)
+                    {
+                        txtowner.setClickable(true);
+                        txtowner.setTextColor(getColor(R.color.colorPrimary));
+
+                        txtowner.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                try
+                                {
+
+                                    Intent i = new Intent(Repo_details.this,Repo_owner.class);
+                                    String ownurl = ownerobj.getString("url").toString();
+
+                                    i.putExtra("jsonstr",ownurl);
+                                    startActivity(i);
+
+                                }catch (JSONException e)
+                                {
+                                    Log.e("JSON Parsing error: ", e.getMessage());
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getApplicationContext(),"Couldn't get json from server. Check LogCat for possible errors!",Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
+
+
+                            }
+                        });
+                    }
 
 
                 }catch (JSONException e)
