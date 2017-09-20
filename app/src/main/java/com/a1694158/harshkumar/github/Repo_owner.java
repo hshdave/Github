@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,6 +29,9 @@ public class Repo_owner extends AppCompatActivity {
     String jsnurl = "";
     TextView  ownnm,type;
     ImageView img_own;
+
+    String jsn = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,74 +44,106 @@ public class Repo_owner extends AppCompatActivity {
         Intent i = getIntent();
         jsnurl = i.getStringExtra("jsonstr");
 
-        new fetchjson().execute(jsnurl);
+        System.out.println("JSON ME!......"+jsnurl);
 
+        getJson(jsnurl);
     }
 
-    public class fetchjson extends AsyncTask<String,Void,String>
+    public void getFollowers(String jsnul)
     {
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
+        try {
+            String s = new AsyncData().execute(jsnul).get();
 
-            System.out.println("Repo owner json.....  "+s);
+           // System.out.println("Followers Array : " + s);
 
-            if (s!=null&&!s.isEmpty())
-            {
+            if (s!=null&&!s.isEmpty()) {
                 try
                 {
-                    JSONObject jsonObject = new JSONObject(s);
+                    JSONArray mainArray = new JSONArray(s);
 
-                    String ownnmls = jsonObject.getString("name");
+                    System.out.println("Followrs in Array  "+mainArray.toString());
 
-                    System.out.println("own name     "+ownnmls);
-
-                    if(ownnmls.equals("null"))
+                    for(int i = 0;i<mainArray.length();i++)
                     {
-                        nm+= jsonObject.getString("login");
+                        JSONObject jobj = mainArray.getJSONObject(i);
+
+                        System.out.println("Folllowrs list   " + jobj.getString("login"));
                     }
-                    else {
-                        nm += jsonObject.getString("name");
-                    }
-                    ownnm.setText(nm);
-
-                    ty += jsonObject.getString("type");
-                    type.setText(ty);
-
-                    String avurl = jsonObject.getString("avatar_url");
-
-                    System.out.println("Avatar url   "+avurl);
-
-                    Picasso.with(Repo_owner.this).load(avurl).noFade().into(img_own);
-
 
 
                 }catch (JSONException e)
                 {
-                    Log.e("JSON Parsing error: ", e.getMessage());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),"Couldn't get json from server. Check LogCat for possible errors!",Toast.LENGTH_LONG).show();
-                        }
-                    });
+                    e.printStackTrace();
                 }
 
             }
 
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
 
 
-            String jsonurl = strings[0];
 
-            Httphandler sh = new Httphandler();
 
-            System.out.println("From Owner Details............."+jsonurl);
-            String jsonstr = sh.makeServiceCall(jsonurl);
-            return jsonstr;
+
+        }catch (Exception e)
+        {
+            e.printStackTrace();
         }
     }
+
+
+    public void getJson(String jsnul)
+   {
+       try
+       {
+           String s = new AsyncData().execute(jsnurl).get();
+
+           if (s!=null&&!s.isEmpty()) {
+               try {
+                   JSONObject jsonObject = new JSONObject(s);
+
+                   String ownnmls = jsonObject.getString("name");
+
+                   System.out.println("own name     " + ownnmls);
+
+                   if (ownnmls.equals("null")) {
+                       nm += jsonObject.getString("login");
+                   } else {
+                       nm += jsonObject.getString("name");
+                   }
+                   ownnm.setText(nm);
+
+                   ty += jsonObject.getString("type");
+                   type.setText(ty);
+
+                   String avurl = jsonObject.getString("avatar_url");
+
+                   System.out.println("Avatar url   " + avurl);
+
+                   Picasso.with(Repo_owner.this).load(avurl).noFade().into(img_own);
+
+
+                   System.out.println("Followers url.... " + jsonObject.getString("followers_url"));
+
+                    jsn = jsonObject.getString("followers_url");
+
+                   getFollowers(jsn);
+
+
+
+               } catch (JSONException e) {
+                   Log.e("JSON Parsing error: ", e.getMessage());
+                   runOnUiThread(new Runnable() {
+                       @Override
+                       public void run() {
+                           Toast.makeText(getApplicationContext(), "Couldn't get json from server. Check LogCat for possible errors!", Toast.LENGTH_LONG).show();
+                       }
+                   });
+               }
+           }
+
+       }catch (Exception e)
+       {
+           e.printStackTrace();
+       }
+
+   }
 }
