@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +21,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class Repo_owner extends AppCompatActivity {
 
@@ -32,6 +34,9 @@ public class Repo_owner extends AppCompatActivity {
 
     String jsn = "";
 
+    ListView lstflw;
+    Flwlistadatpter flwadapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +45,7 @@ public class Repo_owner extends AppCompatActivity {
         ownnm = (TextView) findViewById(R.id.txt_ownm);
         type = (TextView) findViewById(R.id.txt_owtype);
         img_own = (ImageView) findViewById(R.id.img_own);
+        lstflw = (ListView) findViewById(R.id.lst_follow);
 
         Intent i = getIntent();
         jsnurl = i.getStringExtra("jsonstr");
@@ -56,6 +62,8 @@ public class Repo_owner extends AppCompatActivity {
 
            // System.out.println("Followers Array : " + s);
 
+            ArrayList<String> flwlst = new ArrayList<>();
+
             if (s!=null&&!s.isEmpty()) {
                 try
                 {
@@ -67,9 +75,14 @@ public class Repo_owner extends AppCompatActivity {
                     {
                         JSONObject jobj = mainArray.getJSONObject(i);
 
-                        System.out.println("Folllowrs list   " + jobj.getString("login"));
+                     //   System.out.println("Folllowrs list   " + jobj.getString("login"));
+
+                        flwlst.add(jobj.getString("login"));
                     }
 
+                    flwadapter = new Flwlistadatpter(Repo_owner.this,flwlst);
+
+                    lstflw.setAdapter(flwadapter);
 
                 }catch (JSONException e)
                 {
@@ -77,11 +90,6 @@ public class Repo_owner extends AppCompatActivity {
                 }
 
             }
-
-
-
-
-
 
         }catch (Exception e)
         {
