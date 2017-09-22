@@ -27,8 +27,7 @@ public class Projectlist extends AppCompatActivity {
 
     String apilnk = "";
     String schkey = "";
-    public static final int CONNECTION_TIMEOUT = 10000;
-    public static final int READ_TIMEOUT = 15000;
+    String repolink = "";
 
     ArrayList<Gitget> gitdata;
 
@@ -41,76 +40,130 @@ public class Projectlist extends AppCompatActivity {
 
          Intent i = getIntent();
          schkey = i.getStringExtra("search");
+         repolink = i.getStringExtra("repolink");
+
+
+        String key = "";
+        if(schkey != "" && schkey !=  null)
+        {
+            key  =  schkey;
+            key  = key.replace(" ","+");
+            apilnk = "https://api.github.com/search/repositories?q="+key;
+        }
+
+
+
+        System.out.println("From user repository !    "+repolink);
+
+        String[] links = {apilnk,repolink};
+
+
+        new GetJSON().execute(links);
 
         //Toast.makeText(getApplicationContext(),"Key : "+schkey,Toast.LENGTH_LONG).show();
 
-        new GetJSON().execute();
-
     }
 
-    private class GetJSON extends AsyncTask<Void, Void, Void>
+    private class GetJSON extends AsyncTask<String, Void, Void>
     {
+
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
 
+            gitdata = new ArrayList<>();
             Toast.makeText(getApplicationContext(),"Json Data is downloading",Toast.LENGTH_LONG).show();
+
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
-
-            Httphandler sh = new Httphandler();
-
-            String key =  schkey.toString();
-
-            key  = key.replace(" ","+");
-
-            apilnk = "https://api.github.com/search/repositories?q="+key;
+        protected Void doInBackground(String... strings) {
 
 
-            System.out.println("Link............"+apilnk);
-
-            String jsonstr = sh.makeServiceCall(apilnk);
-
-            System.out.println("JSON String     "+ jsonstr);
-
-
-            if (jsonstr!=null)
+            if(strings[1] != null || strings[1] != "")
             {
-                try
+
+                //gitdata = new ArrayList<>();
+                String lk = strings[1];
+
+                Httphandler sh = new Httphandler();
+
+                System.out.println("User Repos............"+lk);
+
+                String jsonstr = sh.makeServiceCall(lk);
+
+                System.out.println("JSON String     "+ jsonstr);
+
+                if (jsonstr!=null)
                 {
-                    JSONObject jsonObject =  new JSONObject(jsonstr);
-                    System.out.println("Main JASON OBJECT     "+jsonObject.toString());
+                    try
+                    {
+                        JSONArray repoarray = new JSONArray(jsonstr);
+
+                        System.out.println("Main JSON REPO Array     "+repoarray.toString());
+
+                        for (int i=0;i<repoarray.length();i++)
+                        {
+                            JSONObject singleobj = repoarray.getJSONObject(i);
+
+                            System.out.println("Single Repos in  "+singleobj.getString("full_name"));
+
+                            gitdata.add(new Gitget(singleobj.getString("full_name"),singleobj.getString("description"),singleobj.getString("url")));
+                        }
+
+
+
+                    }catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+                String lk = strings[0];
+
+                Httphandler sh = new Httphandler();
+
+                System.out.println("Link............"+lk);
+
+                String jsonstr = sh.makeServiceCall(lk);
+
+                System.out.println("JSON String     "+ jsonstr);
+
+
+                if (jsonstr!=null)
+                {
+                    try
+                    {
+                        JSONObject jsonObject =  new JSONObject(jsonstr);
+                        System.out.println("Main JASON OBJECT     "+jsonObject.toString());
 
 //                    Toast.makeText(getApplicationContext(),"Total Result Found : "+jsonObject.getInt("total_count"),Toast.LENGTH_LONG).show();
 
-                    //Main Array
-                    JSONArray items = jsonObject.getJSONArray("items");
+                        //Main Array
+                        JSONArray items = jsonObject.getJSONArray("items");
 
-                 gitdata = new ArrayList<Gitget>();
-
-
-                    for (int i=0;i<items.length();i++)
-                    {
-                        JSONObject c = items.getJSONObject(i);
-                        gitdata.add(new Gitget(c.getString("full_name"),c.getString("description"),c.getString("url")));
-                    }
-
-
-
-                }catch (JSONException e)
-                {
-                    Log.e("JSON Parsing error: ", e.getMessage());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),"Couldn't get json from server. Check LogCat for possible errors!",Toast.LENGTH_LONG).show();
+                        for (int i=0;i<items.length();i++)
+                        {
+                            JSONObject c = items.getJSONObject(i);
+                            gitdata.add(new Gitget(c.getString("full_name"),c.getString("description"),c.getString("url")));
                         }
-                    });
+
+
+
+                    }catch (JSONException e)
+                    {
+                        Log.e("JSON Parsing error: ", e.getMessage());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(),"Couldn't get json from server. Check LogCat for possible errors!",Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
                 }
-            }
 
             return null;
         }

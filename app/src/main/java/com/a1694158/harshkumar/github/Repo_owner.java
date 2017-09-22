@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -137,8 +138,19 @@ public class Repo_owner extends AppCompatActivity {
 
                    getFollowers(jsn);
 
+                   pubrepos.setTextColor(getColor(R.color.colorPrimary));
                    pubrepos.setText(jsonObject.getString("public_repos"));
 
+                   final String repos =  jsonObject.getString("repos_url");
+
+                   pubrepos.setOnClickListener(new View.OnClickListener() {
+                       @Override
+                       public void onClick(View view) {
+                           Intent i = new Intent(Repo_owner.this,Projectlist.class);
+                           i.putExtra("repolink",repos);
+                           startActivity(i);
+                       }
+                   });
 
 
                } catch (JSONException e) {
