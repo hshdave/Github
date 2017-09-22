@@ -17,6 +17,7 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -29,7 +30,7 @@ public class Repo_owner extends AppCompatActivity {
     String nm = "Name : ";
     String ty = "Type : ";
     String jsnurl = "";
-    TextView  ownnm,type;
+    TextView  ownnm,type,pubrepos;
     ImageView img_own;
 
     String jsn = "";
@@ -46,6 +47,7 @@ public class Repo_owner extends AppCompatActivity {
         type = (TextView) findViewById(R.id.txt_owtype);
         img_own = (ImageView) findViewById(R.id.img_own);
         lstflw = (ListView) findViewById(R.id.lst_follow);
+        pubrepos = (TextView) findViewById(R.id.txt_pubrepo);
 
         Intent i = getIntent();
         jsnurl = i.getStringExtra("jsonstr");
@@ -134,6 +136,8 @@ public class Repo_owner extends AppCompatActivity {
                     jsn = jsonObject.getString("followers_url");
 
                    getFollowers(jsn);
+
+                   pubrepos.setText(jsonObject.getString("public_repos"));
 
 
 
