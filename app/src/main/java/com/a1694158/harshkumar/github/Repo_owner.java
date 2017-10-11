@@ -1,11 +1,8 @@
 package com.a1694158.harshkumar.github;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,12 +15,9 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
+
 
 public class Repo_owner extends AppCompatActivity {
 
@@ -31,13 +25,14 @@ public class Repo_owner extends AppCompatActivity {
     String nm = "Name : ";
     String ty = "Type : ";
     String jsnurl = "";
-    TextView  ownnm,type,pubrepos;
+    TextView ownnm, type, pubrepos, disflw;
     ImageView img_own;
 
     String jsn = "";
 
     ListView lstflw;
-    Flwlistadatpter flwadapter;
+    ArrayList<Users> flwlst;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +44,7 @@ public class Repo_owner extends AppCompatActivity {
         img_own = (ImageView) findViewById(R.id.img_own);
         lstflw = (ListView) findViewById(R.id.lst_follow);
         pubrepos = (TextView) findViewById(R.id.txt_pubrepo);
+        disflw = (TextView) findViewById(R.id.dis_flw);
 
         Intent i = getIntent();
         jsnurl = i.getStringExtra("jsonstr");
@@ -57,55 +53,11 @@ public class Repo_owner extends AppCompatActivity {
 
         getJson(jsnurl);
     }
-
-    public void getFollowers(String jsnul)
-    {
-        try {
-            String s = new AsyncData().execute(jsnul).get();
-
-           // System.out.println("Followers Array : " + s);
-
-            ArrayList<String> flwlst = new ArrayList<>();
-
-            if (s!=null&&!s.isEmpty()) {
-                try
-                {
-                    JSONArray mainArray = new JSONArray(s);
-
-                    System.out.println("Followrs in Array  "+mainArray.toString());
-
-                    for(int i = 0;i<mainArray.length();i++)
-                    {
-                        JSONObject jobj = mainArray.getJSONObject(i);
-
-                     //   System.out.println("Folllowrs list   " + jobj.getString("login"));
-
-                        flwlst.add(jobj.getString("login"));
-                    }
-
-                    flwadapter = new Flwlistadatpter(Repo_owner.this,flwlst);
-
-                    lstflw.setAdapter(flwadapter);
-
-                }catch (JSONException e)
-                {
-                    e.printStackTrace();
-                }
-
-            }
-
-        }catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-
     public void getJson(String jsnul)
    {
        try
        {
-           String s = new AsyncData().execute(jsnurl).get();
+           String s = new AsyncData().execute(jsnul).get();
 
            if (s!=null&&!s.isEmpty()) {
                try {
@@ -136,7 +88,7 @@ public class Repo_owner extends AppCompatActivity {
 
                     jsn = jsonObject.getString("followers_url");
 
-                   getFollowers(jsn);
+                   flwData();
 
                    pubrepos.setTextColor(getColor(R.color.colorPrimary));
                    pubrepos.setText(jsonObject.getString("public_repos"));
@@ -170,4 +122,51 @@ public class Repo_owner extends AppCompatActivity {
        }
 
    }
+
+    public void flwClick() {
+        disflw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent i = new Intent(Repo_owner.this, Followers.class);
+                i.putParcelableArrayListExtra("flwlst", flwlst);
+                startActivity(i);
+            }
+        });
+    }
+
+    public void flwData() throws InterruptedException, java.util.concurrent.ExecutionException {
+        try {
+            flwlst = new ArrayList<>();
+            String flws = new AsyncData().execute(jsn).get();
+            System.out.println("Check me " + flws);
+
+            if (flws != null && !flws.isEmpty()) {
+
+                JSONArray mainArray = new JSONArray(flws);
+
+                System.out.println("Followers in Array  " + mainArray.toString());
+
+                disflw.setTextColor(getColor(R.color.colorPrimary));
+                disflw.setText(String.valueOf(mainArray.length()));
+
+
+                if (mainArray.length() == 0) {
+                    Toast.makeText(getApplicationContext(), "No Followers!", Toast.LENGTH_LONG).show();
+                } else {
+                    for (int i = 0; i < mainArray.length(); i++) {
+                        JSONObject jobj = mainArray.getJSONObject(i);
+
+                        flwlst.add(new Users(jobj.getString("login"), jobj.getString("url")));
+                    }
+                    flwClick();
+                }
+
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

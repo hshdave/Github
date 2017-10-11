@@ -6,8 +6,7 @@ import android.os.AsyncTask;
  * Created by Harsh on 9/20/2017.
  */
 
-public class AsyncData extends AsyncTask <String,Void,String> {
-
+public class AsyncData extends AsyncTask<String, Void, String> {
 
 
     @Override
@@ -19,7 +18,7 @@ public class AsyncData extends AsyncTask <String,Void,String> {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
 
-     //   System.out.println("From the Class json.....  "+s);
+        //   System.out.println("From the Class json.....  "+s);
     }
 
     @Override
@@ -29,10 +28,10 @@ public class AsyncData extends AsyncTask <String,Void,String> {
 
         Httphandler sh = new Httphandler();
 
-        System.out.println("From Owner Details............."+jsonurl);
+        System.out.println("From Owner Details............." + jsonurl);
         String jsonstr = sh.makeServiceCall(jsonurl);
 
-        System.out.println("Do in Background service call : "+jsonstr);
+        System.out.println("Do in Background service call : " + jsonstr);
 
         return jsonstr;
     }

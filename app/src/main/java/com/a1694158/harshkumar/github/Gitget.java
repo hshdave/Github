@@ -5,6 +5,7 @@ package com.a1694158.harshkumar.github;
  */
 
 public class Gitget {
+
     private String full_name;
     private String desc;
     private String respourl;
@@ -12,6 +13,12 @@ public class Gitget {
     private String lang;
     private String owner;
 
+
+    public Gitget(String full_name, String desc, String respourl) {
+        this.full_name = full_name;
+        this.desc = desc;
+        this.respourl = respourl;
+    }
 
     public String getName() {
         return name;
@@ -35,12 +42,6 @@ public class Gitget {
 
     public void setOwner(String owner) {
         this.owner = owner;
-    }
-
-    public Gitget(String full_name, String desc, String respourl) {
-        this.full_name = full_name;
-        this.desc = desc;
-        this.respourl = respourl;
     }
 
     public String getFull_name() {

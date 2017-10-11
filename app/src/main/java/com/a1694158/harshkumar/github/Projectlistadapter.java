@@ -46,13 +46,11 @@ public class Projectlistadapter extends BaseAdapter {
     @Override
     public View getView(final int i, View view, ViewGroup viewGroup) {
 
-        if(inflater==null)
-        {
+        if (inflater == null) {
             inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
-        if (view == null)
-        {
-            view = inflater.inflate(R.layout.listcontent,viewGroup,false);
+        if (view == null) {
+            view = inflater.inflate(R.layout.listcontent, viewGroup, false);
         }
 
 
@@ -63,20 +61,19 @@ public class Projectlistadapter extends BaseAdapter {
         txt_v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(c,txt_v.getText().toString(),Toast.LENGTH_LONG).show();
+                Toast.makeText(c, txt_v.getText().toString(), Toast.LENGTH_LONG).show();
 
 
                 String repourl = gitlist.get(i).getRespourl();
 
-                Log.d("Click Repo URL    ",repourl);
+                Log.d("Click Repo URL    ", repourl);
 
-                Intent i = new Intent(c,Repo_details.class);
-                i.putExtra("repourl",repourl);
+                Intent i = new Intent(c, Repo_details.class);
+                i.putExtra("repourl", repourl);
                 c.startActivity(i);
 
             }
         });
-
 
 
         return view;

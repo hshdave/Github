@@ -21,7 +21,8 @@
         </activity>
         <activity android:name=".Projectlist" />
         <activity android:name=".Repo_owner" />
-        <activity android:name=".Repo_details"></activity>
+        <activity android:name=".Repo_details" />
+        <activity android:name=".Followers"></activity>
     </application>
 
 </manifest>

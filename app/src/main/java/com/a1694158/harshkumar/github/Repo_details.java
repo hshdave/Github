@@ -2,8 +2,8 @@ package com.a1694158.harshkumar.github;
 
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 public class Repo_details extends AppCompatActivity {
 
-    TextView txtname,txtfname,txtowner,txtdesc,txtlang;
+    TextView txtname, txtfname, txtowner, txtdesc, txtlang;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,13 +29,13 @@ public class Repo_details extends AppCompatActivity {
 
         Intent i = getIntent();
 
-        String repourl =  i.getStringExtra("repourl");
+        String repourl = i.getStringExtra("repourl");
 
         new Fetchjson().execute(repourl);
     }
 
 
-    public class Fetchjson extends AsyncTask<String,Void,String> {
+    public class Fetchjson extends AsyncTask<String, Void, String> {
 
 
         @Override
@@ -47,7 +47,7 @@ public class Repo_details extends AppCompatActivity {
             Httphandler sh = new Httphandler();
 
 
-            System.out.println("From Repo Details............."+jsonurl);
+            System.out.println("From Repo Details............." + jsonurl);
             String jsonstr = sh.makeServiceCall(jsonurl);
 
             return jsonstr;
@@ -58,10 +58,8 @@ public class Repo_details extends AppCompatActivity {
             super.onPostExecute(s);
 
 
-            if (s!=null&&!s.isEmpty())
-            {
-                try
-                {
+            if (s != null && !s.isEmpty()) {
+                try {
                     final JSONObject jsonObject = new JSONObject(s);
                     txtname.setText(jsonObject.getString("name"));
                     txtfname.setText(jsonObject.getString("full_name"));
@@ -74,8 +72,7 @@ public class Repo_details extends AppCompatActivity {
 
                     String ow = txtowner.getText().toString();
 
-                    if(!ow.isEmpty() && ow != "" && ow != null)
-                    {
+                    if (!ow.isEmpty() && ow != "" && ow != null) {
                         txtowner.setClickable(true);
                         txtowner.setTextColor(getColor(R.color.colorPrimary));
 
@@ -83,22 +80,20 @@ public class Repo_details extends AppCompatActivity {
                             @Override
                             public void onClick(View view) {
 
-                                try
-                                {
+                                try {
 
-                                    Intent i = new Intent(Repo_details.this,Repo_owner.class);
+                                    Intent i = new Intent(Repo_details.this, Repo_owner.class);
                                     String ownurl = ownerobj.getString("url").toString();
 
-                                    i.putExtra("jsonstr",ownurl);
+                                    i.putExtra("jsonstr", ownurl);
                                     startActivity(i);
 
-                                }catch (JSONException e)
-                                {
+                                } catch (JSONException e) {
                                     Log.e("JSON Parsing error: ", e.getMessage());
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            Toast.makeText(getApplicationContext(),"Couldn't get json from server. Check LogCat for possible errors!",Toast.LENGTH_LONG).show();
+                                            Toast.makeText(getApplicationContext(), "Couldn't get json from server. Check LogCat for possible errors!", Toast.LENGTH_LONG).show();
                                         }
                                     });
                                 }
@@ -109,21 +104,18 @@ public class Repo_details extends AppCompatActivity {
                     }
 
 
-                }catch (JSONException e)
-                {
+                } catch (JSONException e) {
                     Log.e("JSON Parsing error: ", e.getMessage());
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(getApplicationContext(),"Couldn't get json from server. Check LogCat for possible errors!",Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Couldn't get json from server. Check LogCat for possible errors!", Toast.LENGTH_LONG).show();
                         }
                     });
                 }
             }
         }
     }
-
-
 
 
 }
